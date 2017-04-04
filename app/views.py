@@ -7,6 +7,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import LoginManager
+from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
@@ -51,6 +52,7 @@ def login():
 @app.route('/main')
 @login_required
 def main():
+    print "nimeia"
     return render_template(
         'main.html'
     )
@@ -61,6 +63,7 @@ def main():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
 
 
 if __name__ == '__main__':
