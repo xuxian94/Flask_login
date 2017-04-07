@@ -61,8 +61,6 @@ class User(UserMixin):
         #     profiles[self.username] = [self.password_hash,
         #                                self.id]
         #     f.write(json.dumps(profiles))
-
-
         self.create_account()
 
     def verify_password(self, password):  # 认证密码
@@ -79,7 +77,7 @@ class User(UserMixin):
             #     if user_info is not None:
             #         return user_info[0]
 
-            user = select_sql(self.username)
+            user = self.select_sql()
 
             if user is not None:
                 return user.password
@@ -95,13 +93,7 @@ class User(UserMixin):
     def get_id(self):
         if self.username is not None:
             try:
-                # with open(PROFILE_FILE) as f:
-                #     user_profiles = json.load(f)
-                #     if self.username in user_profiles:
-                #         return user_profiles[self.username][1]
-
-                # user = self.select_sql(self.username)
-                user = select_sql(self.username)
+                user = self.select_sql()
                 if user is not None:
                     return user.id
             except IOError:
@@ -133,28 +125,18 @@ class User(UserMixin):
             return None
         return None
 
-
-def select_sql(username):
-    if username is not None:
-        try:
-            userInfo = Login_Form.query.filter_by(username=username.encode('utf-8')).first()
-            return userInfo
-        except IOError:
+    def select_sql(self):
+        if self.username is not None:
+            try:
+                userInfo = Login_Form.query.filter_by(username=self.username.encode('utf-8')).first()
+                return userInfo
+            except IOError:
+                return None
+            except ValueError:
+                return None
             return None
-        except ValueError:
-            return None
-        return None
 
-
-def create_account(username, password_hash):
-    account = Login_Form(username, password_hash)
-    db.session.add(account)
-    db.session.commit()
-
-
-if __name__ == '__main__':
-    user = select_sql('admin')
-    print user.username
-    print user.password
-
-    # create_account('lisi',generate_password_hash('123456'))
+    def create_account(self):
+        account = Login_Form(self.username, self.password_hash)
+        db.session.add(account)
+        db.session.commit()

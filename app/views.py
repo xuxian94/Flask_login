@@ -7,7 +7,6 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import LoginManager
-from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
@@ -45,7 +44,7 @@ def login():
         if user.verify_password(password):
             login_user(user)
             return redirect(url_for('main'))
-    return render_template('login1.html',title="Sign In",form=form)
+    return render_template('login1.html', title="Sign In", form=form)
 
 
 @app.route('/')
@@ -58,7 +57,24 @@ def main():
     )
 
 
-@app.route('/logout')
+@app.route('/register',methods=['GET','POST'])
+def register():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user_name = request.form.get('username',None)
+        password = request.form.get('password',None)
+
+        user = User(user_name)
+        user.password = password
+        return redirect(url_for('register_success'))
+    return render_template('register.html', title="Register", form=form)
+
+@app.route('/register_success')
+def register_success():
+    return render_template('register_success.html')
+
+
+@app.route('/logougit t')
 @login_required
 def logout():
     logout_user()
